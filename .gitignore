@@ -1,0 +1,4 @@
+*.vmdk
+*.vmx
+*.vmwarevm
+*.zip

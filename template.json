@@ -1,0 +1,42 @@
+{
+    "builders": [
+        {
+            "boot_wait": "2m",
+            "headless": false,
+            "shutdown_command": "shutdown -P now",
+            "source_path": "./vcenter-server-appliance.vmwarevm/vcenter-server-appliance.vmx",
+            "ssh_password": "vmware",
+            "ssh_username": "root",
+            "ssh_wait_timeout": "15s",
+            "type": "vmware-vmx",
+            "vm_name": "vcenter55",
+            "vmx_data": {
+                "RemoteDisplay.vnc.webSocket.port": "5900",
+                "cpuid.coresPerSocket": "1",
+                "memsize": "8192",
+                "numvcpus": "4",
+                "vhv.enable": "TRUE"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "only": ["vmware-vmx"],
+            "inline": [
+                "useradd vagrant",
+                "echo 'vagrant    ALL = NOPASSWD: ALL' > /etc/sudoers",
+                "mkdir -p /home/vagrant/.ssh",
+                "wget --no-check-certificate -O authorized_keys 'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub'",
+                "mv authorized_keys /home/vagrant/.ssh/",
+                "chown -R vagrant /home/vagrant/.ssh"
+            ]            
+        }
+    ],
+    "post-processors": [
+        {
+            "output": "{{.Provider}}_vcenter55.box",
+            "type": "vagrant"
+        }
+    ]
+}
